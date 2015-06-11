@@ -1,26 +1,26 @@
 package br.com.frametcc.shared.api;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 
-import br.com.frametcc.view.utils.ActivitySailor;
+import com.github.mrengineer13.snackbar.SnackBar;
+
+import br.com.frametcc.view.utils.ActivityNavigator;
 
 public interface BaseView<CONTROL extends BasePresenter> {
 
-    void onApplicationRestarted();
+    public void onApplicationRestarted();
 
-    ActivitySailor getActivitySailor();
+    ActivityNavigator getNavigator();
 
-    void setPresenter(CONTROL controller);
+    public void setPresenter(CONTROL controller);
 
-    void onBackPressed();
+    public void onBackPressed();
 
-    View onCreateView(LayoutInflater layoutInflater, Bundle savedInstanceState);
+    public void destroy();
 
-    void onAfterCreateView(Bundle savedInstanceState);
+    void showSnackBar(String msg);
 
-    void destroy();
+    void showSnackBar(String message, String actionMsg, SnackBar.OnMessageClickListener listener);
 
     void showToast(String msg);
 

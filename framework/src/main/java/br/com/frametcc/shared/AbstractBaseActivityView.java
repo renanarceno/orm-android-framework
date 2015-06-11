@@ -3,27 +3,34 @@ package br.com.frametcc.shared;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.github.mrengineer13.snackbar.SnackBar;
+
 import br.com.frametcc.FrameTCCApplication;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
-import br.com.frametcc.view.utils.ActivitySailor;
+import br.com.frametcc.view.utils.ActivityNavigator;
 
-public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<? extends BaseView<?>>> extends ActionBarActivity implements BaseView<PRESENTER> {
+public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<? extends BaseView<?>>> extends AppCompatActivity implements BaseView<PRESENTER> {
 
-    public ActivitySailor activitySailor;
-    protected ViewPassController pass;
     protected PRESENTER presenter;
+
+    /* Objeto auxiliar para interagir com elementos da tela. */
+    protected ViewPassController pass;
+
+    public ActivityNavigator navigator;
+
     private FrameTCCApplication application;
 
     @Override
-    public ActivitySailor getActivitySailor() {
-        return activitySailor;
+    public ActivityNavigator getNavigator() {
+        return navigator;
     }
 
     @Override
@@ -34,7 +41,7 @@ public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<?
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.activitySailor = new ActivitySailor(this);
+        this.navigator = new ActivityNavigator(this);
         this.application = (FrameTCCApplication) this.getApplication();
         this.application.setupView(this);
         View view = this.onCreateView(getLayoutInflater(), savedInstanceState);
@@ -49,8 +56,10 @@ public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<?
         this.presenter.onApplicationRestarted();
     }
 
-    @Override
-    public abstract void onAfterCreateView(Bundle savedInstanceState);
+    protected abstract View onCreateView(LayoutInflater layoutInflater, Bundle savedInstanceState);
+
+    protected void onAfterCreateView(Bundle savedInstanceState) {
+    }
 
     @Override
     protected void onStart() {
@@ -111,12 +120,24 @@ public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<?
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 this.onBackPressed();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void showSnackBar(String msg) {
+        SnackBar.Builder teste = new SnackBar.Builder(this).withMessage(msg);
+        teste.show();
+    }
+
+    @Override
+    public void showSnackBar(String message, String actionMsg, SnackBar.OnMessageClickListener listener) {
+        SnackBar.Builder snack = new SnackBar.Builder(this).withMessage(message).withActionMessage(actionMsg).withOnClickListener(listener);
+        snack.show();
     }
 
     @Override
@@ -127,7 +148,7 @@ public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<?
     @Nullable
     public Bundle getExtras() {
         Intent intent = getIntent();
-        if(intent != null) {
+        if (intent != null) {
             return intent.getExtras();
         }
         return null;

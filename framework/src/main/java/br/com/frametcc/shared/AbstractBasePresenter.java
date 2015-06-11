@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.frametcc.FrameTCCApplication;
-import br.com.frametcc.control.api.helper.ConnectionCheckerHelper;
+import br.com.frametcc.control.api.ConnectionCheckerHelper;
 import br.com.frametcc.database.dao.DatabaseDAO;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
@@ -24,7 +24,6 @@ public abstract class AbstractBasePresenter<VIEW extends BaseView<?>> implements
     @Override
     public final void init() {
         this.connChecker = new ConnectionCheckerHelper((android.content.Context) view);
-        this.onCreate();
     }
 
     public void setView(VIEW view) {
@@ -33,8 +32,8 @@ public abstract class AbstractBasePresenter<VIEW extends BaseView<?>> implements
 
     @Override
     @Nullable
-    public <C extends BasePresenter<?>, CI extends C> CI getPresenter(Class<CI> presenter) {
-        return getApplication().getControl(presenter);
+    public <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> control) {
+        return getApplication().getControl(control);
     }
 
     public <T extends DatabaseDAO> T getDao(Class<T> dao) {
@@ -44,10 +43,6 @@ public abstract class AbstractBasePresenter<VIEW extends BaseView<?>> implements
     @Override
     public FrameTCCApplication getApplication() {
         return (FrameTCCApplication) ((Activity) this.view).getApplication();
-    }
-
-    @Override
-    public void onCreate() {
     }
 
     @Override

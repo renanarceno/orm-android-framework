@@ -14,21 +14,22 @@ import java.io.InputStreamReader;
 
 import br.com.frametcc.database.annotation.AnnotationHelper;
 import br.com.frametcc.database.api.AutoIncrementId;
-import br.com.frametcc.database.api.DBConfigFile;
 import br.com.frametcc.database.dao.DatabaseDAO;
 import br.com.frametcc.database.helper.ContentValueHelper;
 import br.com.frametcc.database.helper.CursorHelper;
 
 public abstract class DBHelper<E> extends SQLiteOpenHelper implements DatabaseDAO<E> {
     protected static final String DB_TAG = "DATABASE";
+    private static final int DATABASE_VERSION = 1;
+    private static final String NOME_DATABASE = "bitboard2.db";
 
     private static final String DATABASE_DDL_INICIAL_PATH = "database/inicial/ddl";
     private static final String DATABASE_DDL_UPDATE_PATH = "database/update/ddl";
 
     private Context context;
 
-    public DBHelper(Context context, DBConfigFile config) {
-        super(context, config.getDataBaseName(), null, config.getDatabaseVersion());
+    public DBHelper(Context context) {
+        super(context, NOME_DATABASE, null, DATABASE_VERSION);
         this.context = context;
     }
 

@@ -7,33 +7,31 @@ import br.com.frametcc.FrameTCCApplication;
 
 public interface BasePresenter<VIEW extends BaseView<?>> {
 
-    void init();
+    public void init();
 
-    void onCreate();
+    public void setView(VIEW view);
 
-    void setView(VIEW view);
-
-    <C extends BasePresenter<?>, CI extends C> CI getPresenter(Class<CI> presenter);
+    public <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> control);
 
     FrameTCCApplication getApplication();
 
-    void onCreateActivity(Bundle savedInstanceState);
+    public void onCreateActivity(Bundle savedInstanceState);
 
-    void onStartActivity();
+    public void onStartActivity();
 
-    void onResumeActivity();
+    public void onResumeActivity();
 
-    void onPauseActivity();
+    public void onPauseActivity();
 
-    void onStopActivity();
+    public void onStopActivity();
 
-    void onRestartActivity();
+    public void onRestartActivity();
 
-    void onDestroyActivity();
+    public void onDestroyActivity();
 
-    void onBackPressedActivity();
+    public void onBackPressedActivity();
 
-    void onActivityResult(int requestCode, int resultCode, Intent data);
+    public void onActivityResult(int requestCode, int resultCode, Intent data);
 
     void onPreExecute();
 

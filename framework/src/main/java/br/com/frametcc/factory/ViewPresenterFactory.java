@@ -38,7 +38,7 @@ public class ViewPresenterFactory {
 
     @Nullable
     @SuppressWarnings("all")
-    public <C extends BasePresenter<?>, CI extends C> CI getPresenter(Class<CI> interfaceClass) {
+    public <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> interfaceClass) {
         Class<?> aClass = this.presenters.get(interfaceClass);
         return (CI) this.presenterInstances.get(aClass);
     }
@@ -48,7 +48,7 @@ public class ViewPresenterFactory {
         return (Class<V>) this.views.get(interfaceClass);
     }
 
-    public void removePresenter(Class<? extends BaseView> baseView) {
+    public void removeControl(Class<? extends BaseView> baseView) {
         Class<? extends BasePresenter> aClass = this.viewPresenterImpl.get(baseView);
         if(aClass != null) {
             this.presenterInstances.remove(aClass);

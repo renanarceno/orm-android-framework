@@ -9,10 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.github.mrengineer13.snackbar.SnackBar;
+
 import br.com.frametcc.FrameTCCApplication;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
-import br.com.frametcc.view.utils.ActivitySailor;
+import br.com.frametcc.view.utils.ActivityNavigator;
 
 public abstract class AbstractBaseFragmentView<CONTROL extends BasePresenter<? extends BaseView<?>>> extends FragmentActivity implements BaseView<CONTROL> {
 
@@ -21,12 +23,12 @@ public abstract class AbstractBaseFragmentView<CONTROL extends BasePresenter<? e
     /* Objeto auxiliar para interagir com elementos da tela. */
     protected ViewPassController pass;
 
-    public ActivitySailor navigator;
+    public ActivityNavigator navigator;
 
     private FrameTCCApplication application;
 
     @Override
-    public ActivitySailor getActivitySailor() {
+    public ActivityNavigator getNavigator() {
         return navigator;
     }
 
@@ -38,7 +40,7 @@ public abstract class AbstractBaseFragmentView<CONTROL extends BasePresenter<? e
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.navigator = new ActivitySailor(this);
+        this.navigator = new ActivityNavigator(this);
         this.application = (FrameTCCApplication) this.getApplication();
         this.application.setupView(this);
         View view = this.createView(getLayoutInflater(), savedInstanceState);
@@ -113,6 +115,18 @@ public abstract class AbstractBaseFragmentView<CONTROL extends BasePresenter<? e
     @Override
     public void destroy() {
         super.finish();
+    }
+
+    @Override
+    public void showSnackBar(String msg) {
+        SnackBar.Builder teste = new SnackBar.Builder(this).withMessage(msg);
+        teste.show();
+    }
+
+    @Override
+    public void showSnackBar(String message, String actionMsg, SnackBar.OnMessageClickListener listener) {
+        SnackBar.Builder snack = new SnackBar.Builder(this).withMessage(message).withActionMessage(actionMsg).withOnClickListener(listener);
+        snack.show();
     }
 
     @Override

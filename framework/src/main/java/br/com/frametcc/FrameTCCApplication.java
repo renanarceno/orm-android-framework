@@ -7,7 +7,6 @@ import android.util.Log;
 
 import java.util.Map;
 
-import br.com.frametcc.database.api.DBConfig;
 import br.com.frametcc.database.DBHelper;
 import br.com.frametcc.database.dao.DatabaseDAO;
 import br.com.frametcc.factory.DAOFactory;
@@ -69,7 +68,7 @@ public abstract class FrameTCCApplication extends Application {
      */
     public void onActivityDestroyed(Activity activity) {
         BaseView v = ((BaseView) activity);
-        this.factory.removePresenter(v.getClass());
+        this.factory.removeControl(v.getClass());
         Log.w(APP_TAG, "Activity " + activity.getClass().getSimpleName() + " destroyed");
     }
 
@@ -83,7 +82,7 @@ public abstract class FrameTCCApplication extends Application {
 
     @Nullable
     public <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> control) {
-        return this.factory.getPresenter(control);
+        return this.factory.getControl(control);
     }
 
     @Nullable
@@ -124,8 +123,4 @@ public abstract class FrameTCCApplication extends Application {
      */
     public abstract Map<Class<? extends DatabaseDAO>, DBHelper> getDaosIntImpl();
 
-    /**
-     * Configurações sobre o banco de dados do aplicativo
-     */
-    public abstract DBConfig getDBConfig();
 }
