@@ -3,35 +3,38 @@ package br.com.frametcc.shared.api;
 import android.content.Intent;
 import android.os.Bundle;
 
-import br.com.frametcc.FrameTCCApplication;
+import br.com.frametcc.TCCApplication;
 
 public interface BasePresenter<VIEW extends BaseView<?>> {
 
-    public void init();
+    String PRESENTER_IMPL = "tccframework.presenterImpl";
+    String PRESENTER_INTERFACE = "tccframework.presenterInterface";
 
-    public void setView(VIEW view);
+    void init();
 
-    public <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> control);
+    void setView(VIEW view);
 
-    FrameTCCApplication getApplication();
+    <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> control);
 
-    public void onCreateActivity(Bundle savedInstanceState);
+    TCCApplication getApplication();
 
-    public void onStartActivity();
+    void onCreateActivity(Bundle savedInstanceState);
 
-    public void onResumeActivity();
+    void onStartActivity();
 
-    public void onPauseActivity();
+    void onResumeActivity();
 
-    public void onStopActivity();
+    void onPauseActivity();
 
-    public void onRestartActivity();
+    void onStopActivity();
 
-    public void onDestroyActivity();
+    void onRestartActivity();
 
-    public void onBackPressedActivity();
+    void onDestroyActivity();
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data);
+    void onBackPressedActivity();
+
+    void onActivityResult(int requestCode, int resultCode, Intent data);
 
     void onPreExecute();
 

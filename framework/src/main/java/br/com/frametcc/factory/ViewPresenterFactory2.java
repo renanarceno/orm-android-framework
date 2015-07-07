@@ -13,7 +13,7 @@ import br.com.frametcc.shared.AbstractBasePresenter;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
 
-public class ViewPresenterFactory {
+public class ViewPresenterFactory2 {
 
     public Map<Class<? extends BaseView>, Class<? extends BasePresenter>> viewPresenterImpl;
     public Map<Class<? extends BaseView>, Class<? extends BaseView>> views;
@@ -21,7 +21,7 @@ public class ViewPresenterFactory {
 
     private HashMap<Class<? extends BasePresenter>, BasePresenter> presenterInstances;
 
-    public ViewPresenterFactory() {
+    public ViewPresenterFactory2() {
         this.presenterInstances = new HashMap<>();
     }
 

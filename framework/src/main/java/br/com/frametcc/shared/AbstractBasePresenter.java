@@ -9,8 +9,9 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.frametcc.FrameTCCApplication;
+import br.com.frametcc.TCCApplication;
 import br.com.frametcc.control.api.ConnectionCheckerHelper;
+import br.com.frametcc.database.DAOHelper;
 import br.com.frametcc.database.dao.DatabaseDAO;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
@@ -36,13 +37,13 @@ public abstract class AbstractBasePresenter<VIEW extends BaseView<?>> implements
         return getApplication().getControl(control);
     }
 
-    public <T extends DatabaseDAO> T getDao(Class<T> dao) {
+    public <T extends DAOHelper> T getDao(Class<T> dao) {
         return getApplication().getDao(dao);
     }
 
     @Override
-    public FrameTCCApplication getApplication() {
-        return (FrameTCCApplication) ((Activity) this.view).getApplication();
+    public TCCApplication getApplication() {
+        return (TCCApplication) ((Activity) this.view).getApplication();
     }
 
     @Override

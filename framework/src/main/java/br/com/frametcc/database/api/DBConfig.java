@@ -24,7 +24,7 @@ public abstract class DBConfig {
     }
 
     /**
-     * Versão do banco de dados.
+     * Versao do banco de dados.
      */
     public int getDatabaseVersion() {
         return this.databaseVersion;

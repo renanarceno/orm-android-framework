@@ -28,7 +28,7 @@ public abstract class DBConfigFile {
     }
 
     /**
-     * Vers„o do banco de dados.
+     * Vers√£o do banco de dados.
      */
     public int getDatabaseVersion() {
         return this.databaseVersion;
@@ -42,14 +42,14 @@ public abstract class DBConfigFile {
     }
 
     /**
-     * Local onde ficam os scripts de atualizaÁ„o do banco de dados
+     * Local onde ficam os scripts de atualiza√ß√£o do banco de dados
      */
     public File getUpdateScriptsAssetsFolder() {
         return updateScriptsAssetsFolder;
     }
 
     /**
-     * Local onde ficam os scripts de criaÁ„o do banco de dados
+     * Local onde ficam os scripts de cria√ß√£o do banco de dados
      */
     public File getCreateScriptsAssetsFolder() {
         return createScriptsAssetsFolder;

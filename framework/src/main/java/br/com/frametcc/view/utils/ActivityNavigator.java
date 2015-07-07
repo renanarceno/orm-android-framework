@@ -5,18 +5,18 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 
-import br.com.frametcc.FrameTCCApplication;
+import br.com.frametcc.TCCApplication;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
 
 public class ActivityNavigator {
 
     private Activity from;
-    private FrameTCCApplication app;
+    private TCCApplication app;
 
     public ActivityNavigator(Activity from) {
         this.from = from;
-        this.app = (FrameTCCApplication) from.getApplication();
+        this.app = (TCCApplication) from.getApplication();
     }
 
     public <V extends BaseView<P>, P extends BasePresenter<V>> void navigateTo(Class<V> clazz) {

@@ -1,11 +1,14 @@
 package br.com.frametcc.database.dao;
 
+import java.util.List;
+
 public interface DatabaseDAO<E> {
 
     void insertOrUpdate(E obj);
 
-    void deleteByPrimaryKey(E obj);
+    void delete(E obj);
 
-    E getByPrimaryKey(E obj);
+    List<E> listAll();
 
+    E getWhere(String columnName, Object value);
 }

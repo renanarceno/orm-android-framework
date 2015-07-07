@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Column {
 
-    String name() default "";
+    String name();
 
     boolean isAutoIncrementPrimaryKey() default false;
 

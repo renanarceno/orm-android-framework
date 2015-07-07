@@ -4,15 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.github.mrengineer13.snackbar.SnackBar;
-
-import br.com.frametcc.FrameTCCApplication;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
 import br.com.frametcc.view.utils.ActivityNavigator;
@@ -21,16 +14,19 @@ public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<?
 
     protected PRESENTER presenter;
 
-    /* Objeto auxiliar para interagir com elementos da tela. */
-    protected ViewPassController pass;
+    private ActivityControl control;
 
-    public ActivityNavigator navigator;
+    public PRESENTER getPresenter() {
+        return presenter;
+    }
 
-    private FrameTCCApplication application;
+    public ViewPassController getPass() {
+        return control.getPass();
+    }
 
     @Override
     public ActivityNavigator getNavigator() {
-        return navigator;
+        return this.control.getNavigator();
     }
 
     @Override
@@ -41,13 +37,8 @@ public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<?
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.navigator = new ActivityNavigator(this);
-        this.application = (FrameTCCApplication) this.getApplication();
-        this.application.setupView(this);
-        View view = this.onCreateView(getLayoutInflater(), savedInstanceState);
-        this.setContentView(view);
-        this.pass = new ViewPassController((ViewGroup) view);
-        this.onAfterCreateView(savedInstanceState);
+        this.control = new ActivityControl(this);
+        this.control.onCreate(savedInstanceState);
         this.presenter.onCreateActivity(savedInstanceState);
     }
 
@@ -56,42 +47,40 @@ public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<?
         this.presenter.onApplicationRestarted();
     }
 
-    protected abstract View onCreateView(LayoutInflater layoutInflater, Bundle savedInstanceState);
-
-    protected void onAfterCreateView(Bundle savedInstanceState) {
+    public void onAfterCreateView(Bundle savedInstanceState) {
     }
 
     @Override
     protected void onStart() {
-        this.presenter.onStartActivity();
         super.onStart();
+        this.presenter.onStartActivity();
     }
 
     @Override
     protected void onResume() {
-        this.presenter.onResumeActivity();
-        this.application.setTopActivity(this);
         super.onResume();
+        this.presenter.onResumeActivity();
+        this.control.getApplication().setTopActivity(this);
     }
 
     @Override
     protected void onPause() {
-        this.presenter.onPauseActivity();
         super.onPause();
+        this.presenter.onPauseActivity();
     }
 
     @Override
     protected void onStop() {
         this.presenter.onStopActivity();
-        this.application.onActivityStopped(this);
+        this.control.getApplication().onActivityStopped(this);
         super.onStop();
     }
 
     @Override
     protected void onRestart() {
-        this.application.onApplicationRestarted();
-        this.presenter.onRestartActivity();
         super.onRestart();
+        this.control.getApplication().onApplicationRestarted();
+        this.presenter.onRestartActivity();
     }
 
     @Override
@@ -101,9 +90,9 @@ public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<?
 
     @Override
     protected void onDestroy() {
-        this.application.onActivityDestroyed(this);
-        this.presenter.onDestroyActivity();
         super.onDestroy();
+        this.control.getApplication().onActivityDestroyed(this);
+        this.presenter.onDestroyActivity();
     }
 
     @Override
@@ -114,30 +103,8 @@ public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<?
 
     @Override
     public void onBackPressed() {
-        this.presenter.onBackPressedActivity();
         super.onBackPressed();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.onBackPressed();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void showSnackBar(String msg) {
-        SnackBar.Builder teste = new SnackBar.Builder(this).withMessage(msg);
-        teste.show();
-    }
-
-    @Override
-    public void showSnackBar(String message, String actionMsg, SnackBar.OnMessageClickListener listener) {
-        SnackBar.Builder snack = new SnackBar.Builder(this).withMessage(message).withActionMessage(actionMsg).withOnClickListener(listener);
-        snack.show();
+        this.presenter.onBackPressedActivity();
     }
 
     @Override
