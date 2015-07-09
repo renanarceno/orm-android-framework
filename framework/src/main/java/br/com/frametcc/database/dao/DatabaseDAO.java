@@ -11,4 +11,6 @@ public interface DatabaseDAO<E> {
     List<E> listAll();
 
     E getWhere(String columnName, Object value);
+
+    List<E> getWhereList(String columnName, Object value);
 }

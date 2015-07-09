@@ -10,9 +10,11 @@ import java.util.List;
 
 import br.com.frametcc.TCCApplication;
 import br.com.frametcc.database.annotation.AnnotationHelper;
+import br.com.frametcc.database.api.TableSpec;
 import br.com.frametcc.database.dao.DatabaseDAO;
 import br.com.frametcc.database.helper.ContentValueHelper;
 import br.com.frametcc.database.helper.CursorHelper;
+import br.com.frametcc.database.helper.QueryHelper;
 import br.com.frametcc.database.helper.ValueAsString;
 
 /**
@@ -20,7 +22,13 @@ import br.com.frametcc.database.helper.ValueAsString;
  */
 public abstract class DAOHelper<E> implements DatabaseDAO<E> {
 
+    private QueryHelper<E> queryHelper;
+
     public abstract Class<E> getEntityType();
+
+    public DAOHelper() {
+        this.queryHelper = new QueryHelper<>(getEntityType());
+    }
 
     protected SQLiteDatabase getReadableDatabase() {
         return TCCApplication.getDbConnection().getReadableDatabase();
@@ -81,15 +89,10 @@ public abstract class DAOHelper<E> implements DatabaseDAO<E> {
 
     @Override
     public void delete(E obj) {
-        String[] keyName = AnnotationHelper.getPrimaryKeyName(obj);
-        String selection = this.resolveSelection(keyName);
-        String tableName = AnnotationHelper.getTableName(obj);
-
-        String[] value = AnnotationHelper.getPrimaryKeyValue(obj);
         SQLiteDatabase database = getWritableDatabase();
         database.beginTransaction();
         try {
-            database.delete(tableName, selection, value);
+            this.queryHelper.delete(database, obj);
             database.setTransactionSuccessful();
         } catch (Exception ignore) {
         } finally {
@@ -100,31 +103,19 @@ public abstract class DAOHelper<E> implements DatabaseDAO<E> {
 
     @Override
     public List<E> listAll() {
-        final SQLiteDatabase database = getReadableDatabase();
-        List<E> list = new ArrayList<>();
-        String tableName = AnnotationHelper.getTableName(getEntityType());
-        database.beginTransaction();
-        try {
-            Cursor cursor = database.query(tableName, null, null, null, null, null, null);
-            list = CursorHelper.cursorToList(cursor, getEntityType());
-        } catch (Exception ignore) {
-        } finally {
-            database.endTransaction();
-            database.close();
-        }
-        return list;
+        return this.queryHelper.listAll(getReadableDatabase());
     }
 
     @Override
     public E getWhere(String columnName, Object value) {
-        String tableName = AnnotationHelper.getTableName(getEntityType());
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.query(tableName, null, columnName + " = ? ", new String[]{ValueAsString.getAsString(value)}, null, null, null);
-        E object = CursorHelper.cursorToObj(cursor, getEntityType());
-        if (cursor != null)
-            cursor.close();
-        return object;
+        return this.queryHelper.getWhere(getReadableDatabase(), columnName, value);
     }
+
+    @Override
+    public List<E> getWhereList(String columnName, Object value) {
+        return this.queryHelper.getWhereList(getReadableDatabase(), columnName, value);
+    }
+
 
     protected String resolveSelection(String[] keyName) {
         StringBuilder selection = new StringBuilder("");

@@ -7,10 +7,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import br.com.frametcc.database.DAOHelper;
 import br.com.frametcc.database.DBConnectionHelper;
+import br.com.frametcc.database.api.TableSpec;
 import br.com.frametcc.database.dao.DatabaseDAO;
 import br.com.frametcc.factory.DAOFactory;
 import br.com.frametcc.factory.ViewPresenterFactory;
@@ -25,6 +27,7 @@ public abstract class TCCApplication extends Application {
     public static final String DB_ASSETS_DB_CREATE_FOLDER = "tccframework.dbAssets.dbCreateFolder";
     public static final String DB_ASSETS_DB_UPDATE_FOLDER = "tccframework.dbAssets.dbUpdateFolder";
 
+    private static Map<Class, TableSpec> tablesSpec = new HashMap<>();
     private static DBConnectionHelper dbConnection;
 
     private final TCCLog log = TCCLog.getInstance();
@@ -38,6 +41,7 @@ public abstract class TCCApplication extends Application {
     public final void onCreate() {
         super.onCreate();
         getDbConfig();
+
         this.create();
         this.factory = new ViewPresenterFactory();
         this.daoFactory = new DAOFactory(this.getApplicationContext());
@@ -69,6 +73,16 @@ public abstract class TCCApplication extends Application {
 
         if (dbVersion != DEFAULT_DB_VERSION && !dbName.isEmpty())
             dbConnection = new DBConnectionHelper(this.getApplicationContext(), dbName, null, dbVersion, dbCreateFolder, dbUpdateFolder);
+    }
+
+    @SuppressWarnings("all")
+    public static <E> TableSpec<E> getTableSpec(Class<E> entityType) {
+        TableSpec<E> tableSpec = tablesSpec.get(entityType);
+        if (tableSpec == null) {
+            tableSpec = TableSpec.createInstance(entityType);
+            tablesSpec.put(entityType, tableSpec);
+        }
+        return tableSpec;
     }
 
     public static DBConnectionHelper getDbConnection() {
@@ -165,5 +179,4 @@ public abstract class TCCApplication extends Application {
      * Mapeamento da interface do DAO com sua implementação, que estende de DBHelper
      */
     public abstract Map<Class<? extends DatabaseDAO>, DAOHelper> getDaosIntImpl();
-
 }

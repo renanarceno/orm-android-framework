@@ -50,7 +50,7 @@ public class AnnotationHelper {
         return gambi;
     }
 
-    private static List<Field> getPrimaryKeyFields(Object obj) {
+    public static List<Field> getPrimaryKeyFields(Object obj) {
         Field[] fields = obj.getClass().getFields();
         List<Field> pkField = new ArrayList<>();
         for (Field f : fields) {
