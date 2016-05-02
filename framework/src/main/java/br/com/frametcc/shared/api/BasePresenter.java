@@ -12,9 +12,11 @@ public interface BasePresenter<VIEW extends BaseView<?>> {
 
     void init();
 
+    void destroy();
+
     void setView(VIEW view);
 
-    <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> control);
+    <C extends BasePresenter<?>, CI extends C> CI getPresenter(Class<CI> control);
 
     TCCApplication getApplication();
 
@@ -36,11 +38,7 @@ public interface BasePresenter<VIEW extends BaseView<?>> {
 
     void onActivityResult(int requestCode, int resultCode, Intent data);
 
-    void onPreExecute();
-
-    Object doInBackground(Object[] params);
-
-    void onPostExecute(Object o);
-
     void onApplicationRestarted();
+
+    void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults);
 }

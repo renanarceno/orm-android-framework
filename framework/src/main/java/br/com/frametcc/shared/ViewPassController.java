@@ -13,6 +13,10 @@ public class ViewPassController {
         this.baseView = baseView;
     }
 
+    public ViewGroup getBaseView() {
+        return baseView;
+    }
+
     @SuppressWarnings("unchecked")
     public <AVIEW extends View> AVIEW findViewById(int id) {
         return (AVIEW) this.baseView.findViewById(id);
@@ -25,13 +29,13 @@ public class ViewPassController {
     public void setText(int id, String textStr) {
         View view = findViewById(id);
         ((TextView) view).setText(textStr);
-        if(view instanceof EditText && textStr != null) {
+        if (view instanceof EditText && textStr != null) {
             ((EditText) view).setSelection(textStr.length());
         }
     }
 
     public void setTextOrGoneWhenNull(int id, String textStr) {
-        if(textStr == null || textStr.length() == 0) {
+        if (textStr == null || textStr.length() == 0) {
             this.setVisibleOrGone(true, id);
         } else {
             this.setText(id, textStr);

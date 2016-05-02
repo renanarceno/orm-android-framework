@@ -1,33 +1,26 @@
 package br.com.frametcc.database;
 
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import java.util.ArrayList;
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import br.com.frametcc.TCCApplication;
-import br.com.frametcc.database.annotation.AnnotationHelper;
-import br.com.frametcc.database.api.TableSpec;
+import br.com.frametcc.database.api.DBListener;
 import br.com.frametcc.database.dao.DatabaseDAO;
-import br.com.frametcc.database.helper.ContentValueHelper;
-import br.com.frametcc.database.helper.CursorHelper;
 import br.com.frametcc.database.helper.QueryHelper;
-import br.com.frametcc.database.helper.ValueAsString;
 
-/**
- * Criado por Renan Arceno em 25/06/2015 - 15:25.
- */
-public abstract class DAOHelper<E> implements DatabaseDAO<E> {
+public abstract class DAOHelper<E> implements DatabaseDAO<E>, DBListener<E> {
 
-    private QueryHelper<E> queryHelper;
+    protected final QueryHelper<E> queryHelper;
+    private final Class<E> typeClass;
 
-    public abstract Class<E> getEntityType();
-
+    @SuppressWarnings("all")
     public DAOHelper() {
-        this.queryHelper = new QueryHelper<>(getEntityType());
+        // Pega a classe de 'E'
+        this.typeClass = (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.queryHelper = new QueryHelper<>(typeClass);
+        this.queryHelper.setListener(this);
     }
 
     protected SQLiteDatabase getReadableDatabase() {
@@ -38,53 +31,28 @@ public abstract class DAOHelper<E> implements DatabaseDAO<E> {
         return TCCApplication.getDbConnection().getWritableDatabase();
     }
 
-    public synchronized void insertOrUpdate(E obj) {
-        String tableName = AnnotationHelper.getTableName(obj);
-        String[] keyName = AnnotationHelper.getPrimaryKeyName(obj);
-        String[] values = AnnotationHelper.getPrimaryKeyValue(obj);
-        ContentValues dados = ContentValueHelper.getValues(obj);
+    public <A extends DatabaseDAO> A getDao(Class<A> clazz) {
+        return TCCApplication.getDbConnection().getDao(clazz);
+    }
+
+    public synchronized void insert(E obj) {
         SQLiteDatabase database = getWritableDatabase();
-        boolean isToUpdate = false;
-        if (values != null) {
-            for (String str : values) {
-                if (str != null) {
-                    isToUpdate = true;
-                    break;
-                }
-            }
-        }
-        if (isToUpdate) {
-            this.update(dados, tableName, this.resolveSelection(keyName), values, database);
-        } else {
-            this.insert(obj, tableName, dados, database);
-        }
+        this.queryHelper.insert(database, obj);
     }
 
-    protected void update(ContentValues dados, String tableName, String where, String[] args, SQLiteDatabase database) {
-        database.beginTransaction();
-        try {
-            database.update(tableName, dados, where, args);
-            database.setTransactionSuccessful();
-        } catch (Exception ignore) {
-            Log.e("DB", "DEU ERRO " + ignore.getCause());
-        } finally {
-            database.endTransaction();
-            database.close();
-        }
+    public synchronized void update(E obj) {
+        SQLiteDatabase database = getWritableDatabase();
+        this.queryHelper.update(database, obj);
     }
 
-    protected void insert(E obj, String tableName, ContentValues dados, SQLiteDatabase database) {
-        database.beginTransaction();
-        long id;
-        try {
-            id = database.insert(tableName, null, dados);
-            database.setTransactionSuccessful();
-            AnnotationHelper.setPrimaryKey(obj, id);
-        } catch (Exception ignore) {
-        } finally {
-            database.endTransaction();
-            database.close();
-        }
+    public synchronized void insertOrUpdate(E obj) {
+        SQLiteDatabase database = getWritableDatabase();
+        this.queryHelper.insertOrUpdate(database, obj);
+    }
+
+    @Override
+    public void updateWhere(E obj, String column) {
+        this.queryHelper.updateWhere(getWritableDatabase(), obj, column);
     }
 
     @Override
@@ -102,29 +70,54 @@ public abstract class DAOHelper<E> implements DatabaseDAO<E> {
     }
 
     @Override
+    public Long getMaxLongValue(String column) {
+        return this.queryHelper.getMaxValue(getReadableDatabase(), column);
+    }
+
+    @Override
+    public boolean exists(String column, Object value) {
+        return this.queryHelper.existInDatabase(getReadableDatabase(), new String[]{column}, value);
+    }
+
+    @Override
     public List<E> listAll() {
         return this.queryHelper.listAll(getReadableDatabase());
     }
 
     @Override
-    public E getWhere(String columnName, Object value) {
-        return this.queryHelper.getWhere(getReadableDatabase(), columnName, value);
+    public int countAll() {
+        return this.queryHelper.countAll(getReadableDatabase());
     }
 
     @Override
-    public List<E> getWhereList(String columnName, Object value) {
-        return this.queryHelper.getWhereList(getReadableDatabase(), columnName, value);
+    public E getWhere(String whereQuery, Object... value) {
+        return this.queryHelper.getWhere(getReadableDatabase(), whereQuery, value);
     }
 
+    @Override
+    public List<E> getWhereList(String whereQuery, Object... value) {
+        return this.queryHelper.getWhereList(getReadableDatabase(), whereQuery, null, null, null, null, value);
+    }
 
-    protected String resolveSelection(String[] keyName) {
-        StringBuilder selection = new StringBuilder("");
-        for (String s : keyName) {
-            selection.append(s);
-            selection.append(" =?, ");
-        }
-        String resp = selection.toString();
-        int indexOf = resp.lastIndexOf(",");
-        return resp.substring(0, indexOf);
+    @Override
+    public List<E> getWhereList(String whereQuery, String limit, Object... value) {
+        return this.queryHelper.getWhereList(getReadableDatabase(), whereQuery, null, null, null, limit, value);
+    }
+
+    @Override
+    public List<E> getWhereList(String whereQuery, String orderBy, String limit, Object... value) {
+        return this.queryHelper.getWhereList(getReadableDatabase(), whereQuery, null, null, orderBy, limit, value);
+    }
+
+    public void setRetrieveListener(DBListener<E> listener) {
+        this.queryHelper.setListener(listener);
+    }
+
+    @Override
+    public void onRetrieve(E obj) {
+    }
+
+    public Class<E> getTypeClass() {
+        return typeClass;
     }
 }

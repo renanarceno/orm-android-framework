@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import br.com.frametcc.database.DAOHelper;
@@ -27,28 +26,24 @@ public abstract class TCCApplication extends Application {
     public static final String DB_ASSETS_DB_CREATE_FOLDER = "tccframework.dbAssets.dbCreateFolder";
     public static final String DB_ASSETS_DB_UPDATE_FOLDER = "tccframework.dbAssets.dbUpdateFolder";
 
-    private static Map<Class, TableSpec> tablesSpec = new HashMap<>();
     private static DBConnectionHelper dbConnection;
 
     private final TCCLog log = TCCLog.getInstance();
     private Activity lastActivity;
     private ViewPresenterFactory factory;
-    private DAOFactory daoFactory;
-    private DAOHelper daoHelper;
 
     @Override
     @SuppressWarnings("all")
     public final void onCreate() {
         super.onCreate();
         getDbConfig();
-
         this.create();
+
         this.factory = new ViewPresenterFactory();
-        this.daoFactory = new DAOFactory(this.getApplicationContext());
-        this.daoFactory.daos = getDaosIntImpl();
+        final DAOFactory daoFactory = new DAOFactory(this.getApplicationContext());
+        daoFactory.daos = getDaosIntImpl();
+        dbConnection.setDaoFactory(daoFactory);
         this.factory.viewPresenterImpl = getControlViewMap();
-        this.factory.presenters = getControlIntImpl();
-        this.factory.views = getViewIntImpl();
         this.onAfterCreate();
     }
 
@@ -77,12 +72,7 @@ public abstract class TCCApplication extends Application {
 
     @SuppressWarnings("all")
     public static <E> TableSpec<E> getTableSpec(Class<E> entityType) {
-        TableSpec<E> tableSpec = tablesSpec.get(entityType);
-        if (tableSpec == null) {
-            tableSpec = TableSpec.createInstance(entityType);
-            tablesSpec.put(entityType, tableSpec);
-        }
-        return tableSpec;
+        return dbConnection.getTableSpec(entityType);
     }
 
     public static DBConnectionHelper getDbConnection() {
@@ -125,21 +115,17 @@ public abstract class TCCApplication extends Application {
      */
     public void onActivityDestroyed(Activity activity) {
         BaseView v = ((BaseView) activity);
-        this.factory.removeControl(v.getClass());
+        this.factory.removePresenter(v);
         log.w("Activity " + activity.getClass().getSimpleName() + " destroyed");
     }
 
     public <T extends DatabaseDAO> T getDao(Class<T> clazz) {
-        T dao = daoFactory.getDao(clazz);
-        if (dao == null) {
-            throw new RuntimeException("DAO não mapeado para uma implementação");
-        }
-        return dao;
+        return dbConnection.getDao(clazz);
     }
 
     @Nullable
     public <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> control) {
-        return this.factory.getControl(control);
+        return this.factory.getPresenter(control);
     }
 
     @Nullable
@@ -157,23 +143,12 @@ public abstract class TCCApplication extends Application {
      * Chamado assim que a aplicação inicializa as Factories
      */
     public void onAfterCreate() {
-
     }
 
     /**
      * Mapeamento da implementação do controle com sua implementação da visão
      */
     public abstract Map<Class<? extends BaseView>, Class<? extends BasePresenter>> getControlViewMap();
-
-    /**
-     * Mapeamento da interface do controle com sua implementação
-     */
-    public abstract Map<Class<? extends BasePresenter>, Class<? extends AbstractBasePresenter>> getControlIntImpl();
-
-    /**
-     * Mapeamento da interface da view com sua implementação
-     */
-    public abstract Map<Class<? extends BaseView>, Class<? extends BaseView>> getViewIntImpl();
 
     /**
      * Mapeamento da interface do DAO com sua implementação, que estende de DBHelper

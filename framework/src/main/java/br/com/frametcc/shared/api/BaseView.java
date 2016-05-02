@@ -18,6 +18,8 @@ public interface BaseView<CONTROL extends BasePresenter> {
 
     void setPresenter(CONTROL controller);
 
+    CONTROL getPresenter();
+
     void onBackPressed();
 
     void destroy();

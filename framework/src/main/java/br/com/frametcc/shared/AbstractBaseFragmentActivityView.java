@@ -3,7 +3,6 @@ package br.com.frametcc.shared;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +14,10 @@ import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
 import br.com.frametcc.view.utils.ActivityNavigator;
 
-public abstract class AbstractBaseFragmentView<PRESENTER extends BasePresenter<? extends BaseView<?>>> extends Fragment implements BaseView<PRESENTER> {
+public abstract class AbstractBaseFragmentActivityView<PRESENTER extends BasePresenter<? extends BaseView<?>>> extends FragmentActivity implements BaseView<PRESENTER> {
 
-    public PRESENTER presenter;
-    public ViewPassController pass;
+    protected PRESENTER presenter;
+    protected ViewPassController pass;
     public ActivityNavigator navigator;
     private TCCApplication application;
 
@@ -38,30 +37,20 @@ public abstract class AbstractBaseFragmentView<PRESENTER extends BasePresenter<?
     }
 
     @Override
-    public final void onCreate(Bundle savedInstanceState) {
+    protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FragmentActivity activity = getActivity();
-        this.navigator = new ActivityNavigator(activity);
-        this.application = (TCCApplication) activity.getApplication();
+        this.navigator = new ActivityNavigator(this);
+        this.application = (TCCApplication) this.getApplication();
         this.application.setupView(this);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater layoutInflater, Bundle savedInstanceState) {
-        return null;
-    }
-
-    public ViewPassController getPass() {
-        return pass;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        View view = this.onCreateView(getLayoutInflater(), savedInstanceState);
+        this.setContentView(view);
         this.pass = new ViewPassController((ViewGroup) view);
-        onAfterCreateView(savedInstanceState);
+        this.onAfterCreateView(savedInstanceState);
         this.presenter.onCreateActivity(savedInstanceState);
     }
+
+    @Override
+    public abstract View onCreateView(LayoutInflater layoutInflater, Bundle savedInstanceState);
 
     @Override
     public void onApplicationRestarted() {
@@ -72,40 +61,47 @@ public abstract class AbstractBaseFragmentView<PRESENTER extends BasePresenter<?
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         this.presenter.onStartActivity();
         super.onStart();
     }
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         this.presenter.onResumeActivity();
-        this.application.setTopActivity(this.getActivity());
+        this.application.setTopActivity(this);
         super.onResume();
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         this.presenter.onPauseActivity();
         super.onPause();
     }
 
     @Override
-    public void onStop() {
+    protected void onStop() {
         this.presenter.onStopActivity();
-        this.application.onActivityStopped(this.getActivity());
+        this.application.onActivityStopped(this);
         super.onStop();
     }
 
     @Override
-    public void onDestroy() {
-        this.application.onActivityDestroyed(this.getActivity());
+    protected void onRestart() {
+        this.application.onApplicationRestarted();
+        this.presenter.onRestartActivity();
+        super.onRestart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        this.application.onActivityDestroyed(this);
         this.presenter.onDestroyActivity();
         super.onDestroy();
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         this.presenter.onActivityResult(requestCode, resultCode, data);
     }
@@ -113,24 +109,24 @@ public abstract class AbstractBaseFragmentView<PRESENTER extends BasePresenter<?
     @Override
     public void onBackPressed() {
         this.presenter.onBackPressedActivity();
-        getActivity().onBackPressed();
+        super.onBackPressed();
     }
 
     @Override
     public void destroy() {
         this.presenter.destroy();
-        getActivity().finish();
+        super.finish();
     }
 
     @Override
     public void showToast(String msg) {
-        Toast.makeText(this.getActivity(), msg, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
     @Override
     @Nullable
     public Bundle getExtras() {
-        Intent intent = getActivity().getIntent();
+        Intent intent = getIntent();
         if (intent != null) {
             return intent.getExtras();
         }

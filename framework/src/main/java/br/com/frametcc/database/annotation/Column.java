@@ -15,6 +15,6 @@ public @interface Column {
 
     boolean isPrimaryKey() default false;
 
-    boolean isForeignKey() default false;
+    String foreignKeyRef() default "";
 
 }

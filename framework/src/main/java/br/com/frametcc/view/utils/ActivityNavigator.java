@@ -25,7 +25,8 @@ public class ActivityNavigator {
 
     public <V extends BaseView<P>, P extends BasePresenter<V>> void navigateClearTop(Class<V> clazz) {
         Intent i = createIntent(clazz);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         this.navigateTo(i);
     }
 

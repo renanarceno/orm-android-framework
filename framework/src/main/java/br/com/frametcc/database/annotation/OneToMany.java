@@ -1,4 +1,4 @@
-package br.com.frametcc.conn.api;
+package br.com.frametcc.database.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,10 +7,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JsonReceiveKey {
+public @interface OneToMany {
 
-    String jsonKeyValue();
+    String fkName();
 
-    int[] usedInApi() default {};
+    int loadQuant() default Integer.MAX_VALUE;
 
 }

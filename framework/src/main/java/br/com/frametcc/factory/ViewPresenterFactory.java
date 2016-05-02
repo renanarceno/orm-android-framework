@@ -1,11 +1,8 @@
 package br.com.frametcc.factory;
 
-import android.app.Activity;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,9 +13,6 @@ import br.com.frametcc.shared.api.BaseView;
 public class ViewPresenterFactory {
 
     public Map<Class<? extends BaseView>, Class<? extends BasePresenter>> viewPresenterImpl;
-    public Map<Class<? extends BaseView>, Class<? extends BaseView>> views;
-    public Map<Class<? extends BasePresenter>, Class<? extends AbstractBasePresenter>> presenters;
-
     private HashMap<Class<? extends BasePresenter>, BasePresenter> presenterInstances;
 
     public ViewPresenterFactory() {
@@ -27,18 +21,7 @@ public class ViewPresenterFactory {
 
     @SuppressWarnings("unchecked")
     public void createPresenterInstance(BaseView viewImpl) {
-        try {
-            ActivityInfo info = ((Activity) viewImpl).getPackageManager().getActivityInfo(((Activity) viewImpl).getComponentName(), PackageManager.GET_ACTIVITIES | PackageManager.GET_META_DATA);
-            Bundle metaData = info.metaData;
-            String presenterInterface = metaData.getString(BasePresenter.PRESENTER_INTERFACE);
-            String presenterImpl = metaData.getString(BasePresenter.PRESENTER_IMPL);
-
-
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Class<? extends BasePresenter> controlImpl = this.viewPresenterImpl.get(viewImpl.getClass());
+        Class<? extends BasePresenter> controlImpl = getPresenterClass(viewImpl);
         try {
             BasePresenter basePresenter = controlImpl.newInstance();
             viewImpl.setPresenter(basePresenter);
@@ -46,27 +29,58 @@ public class ViewPresenterFactory {
             basePresenter.init();
             this.presenterInstances.put(controlImpl, basePresenter);
         } catch (NullPointerException npe) {
-            throw new RuntimeException(viewImpl.getClass().getSimpleName() + " não possui um presenter mapeado.");
+            throw new RuntimeException(viewImpl.getClass().getSimpleName() + " não possui um presenter mapeado.", npe);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private Class<? extends BasePresenter> getPresenterClass(BaseView viewImpl) {
+        Class<? extends BaseView> viewImplClass = viewImpl.getClass();
+
+        for (Map.Entry<Class<? extends BaseView>, Class<? extends BasePresenter>> entry : this.viewPresenterImpl.entrySet()) {
+            Class<? extends BaseView> key = entry.getKey();
+            Class<? extends BasePresenter> value = entry.getValue();
+            if (key.equals(viewImplClass) || key.isAssignableFrom(viewImplClass))
+                return value;
+        }
+        throw new RuntimeException("Can't find presenter \"" + viewImpl.getClass().getSimpleName() + "\"");
+    }
+
+    @SuppressWarnings("all")
+    private Class<? extends BasePresenter> getPresenterClassFrom(Class basePresenter) {
+        for (Class<? extends BasePresenter> presenter : this.viewPresenterImpl.values()) {
+            if (basePresenter.isAssignableFrom(presenter) || basePresenter.equals(presenter))
+                return presenter;
+        }
+        throw new RuntimeException("Can't find presenter \"" + basePresenter.getClass().getSimpleName() + "\"");
+    }
+
+    @SuppressWarnings("all")
+    private Class<? extends BaseView> getViewClassFrom(Class baseView) {
+        for (Class<? extends BaseView> view : this.viewPresenterImpl.keySet()) {
+            if (baseView.isAssignableFrom(view) || baseView.equals(view))
+                return view;
+        }
+        throw new RuntimeException("Can't find view \"" + baseView.getClass().getSimpleName() + "\"");
+    }
+
     @Nullable
     @SuppressWarnings("all")
-    public <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> interfaceClass) {
-        Class<?> aClass = this.presenters.get(interfaceClass);
+    public <C extends BasePresenter<?>, CI extends C> CI getPresenter(Class<CI> interfaceClass) {
+        Class<?> aClass = getPresenterClassFrom(interfaceClass);
         return (CI) this.presenterInstances.get(aClass);
     }
 
     @SuppressWarnings("unchecked")
     public <V extends BaseView<C>, C extends BasePresenter<V>> Class<V> getViewImpl(Class<? extends BaseView> interfaceClass) {
-        return (Class<V>) this.views.get(interfaceClass);
+        return (Class<V>) getViewClassFrom(interfaceClass);
     }
 
-    public void removeControl(Class<? extends BaseView> baseView) {
-        Class<? extends BasePresenter> aClass = this.viewPresenterImpl.get(baseView);
+    public void removePresenter(BaseView baseView) {
+        Class<? extends BasePresenter> aClass = this.viewPresenterImpl.get(baseView.getClass());
         if (aClass != null) {
+            baseView.destroy();
             this.presenterInstances.remove(aClass);
         }
     }
