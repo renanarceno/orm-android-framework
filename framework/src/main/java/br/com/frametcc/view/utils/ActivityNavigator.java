@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
+import android.test.suitebuilder.annotation.Suppress;
 
 import br.com.frametcc.TCCApplication;
 import br.com.frametcc.shared.api.BasePresenter;
@@ -19,22 +20,23 @@ public class ActivityNavigator {
         this.app = (TCCApplication) from.getApplication();
     }
 
-    public <V extends BaseView<P>, P extends BasePresenter<V>> void navigateTo(Class<V> clazz) {
+    public <V extends BaseView<P>, P extends BasePresenter<V, ?>> void navigateTo(Class<V> clazz) {
         this.navigateTo(clazz, new Bundle());
     }
 
-    public <V extends BaseView<P>, P extends BasePresenter<V>> void navigateClearTop(Class<V> clazz) {
+    @SuppressWarnings("all")
+    public <V extends BaseView<P>, P extends BasePresenter<V, ?>> void navigateClearTop(Class<V> clazz) {
         Intent i = createIntent(clazz);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         this.navigateTo(i);
     }
 
-    public <V extends BaseView<P>, P extends BasePresenter<V>> void navigateTo(Intent intent) {
+    public <V extends BaseView<P>, P extends BasePresenter<V, ?>> void navigateTo(Intent intent) {
         this.from.startActivity(intent);
     }
 
-    public <V extends BaseView<P>, P extends BasePresenter<V>> void navigateTo(Class<V> clazz, Bundle extras) {
+    public <V extends BaseView<P>, P extends BasePresenter<V, ?>> void navigateTo(Class<V> clazz, Bundle extras) {
         Intent i = createIntent(clazz);
         i.putExtras(extras);
         this.from.startActivity(i);

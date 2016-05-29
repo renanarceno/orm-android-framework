@@ -79,7 +79,7 @@ public class DBConnectionHelper extends SQLiteOpenHelper implements DBConnection
     }
 
 //    public <T extends DatabaseDAO> T getDaoFromModel(Class<T> clazz) {
-//        T dao = daoFactory.getDao(clazz);
+//        T dao = daoFactory.tDao(clazz);
 //        if (dao == null)
 //            throw new RuntimeException("Can't find a DAO implementation");
 //        return dao;

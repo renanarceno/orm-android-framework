@@ -14,8 +14,8 @@ import br.com.frametcc.database.DBConnectionHelper;
 import br.com.frametcc.database.api.TableSpec;
 import br.com.frametcc.database.dao.DatabaseDAO;
 import br.com.frametcc.factory.DAOFactory;
-import br.com.frametcc.factory.ViewPresenterFactory;
-import br.com.frametcc.shared.AbstractBasePresenter;
+import br.com.frametcc.factory.ModelViewPresenterFactory;
+import br.com.frametcc.shared.api.BaseModel;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
 
@@ -30,32 +30,36 @@ public abstract class TCCApplication extends Application {
 
     private final TCCLog log = TCCLog.getInstance();
     private Activity lastActivity;
-    private ViewPresenterFactory factory;
+    private ModelViewPresenterFactory factory;
 
     @Override
     @SuppressWarnings("all")
     public final void onCreate() {
         super.onCreate();
-        getDbConfig();
+        configDatabase();
         this.create();
 
-        this.factory = new ViewPresenterFactory();
+        this.factory = new ModelViewPresenterFactory();
         final DAOFactory daoFactory = new DAOFactory(this.getApplicationContext());
         daoFactory.daos = getDaosIntImpl();
-        dbConnection.setDaoFactory(daoFactory);
+        if (dbConnection != null)
+            dbConnection.setDaoFactory(daoFactory);
         this.factory.viewPresenterImpl = getControlViewMap();
+        this.factory.modelPresenterImpl = getPresenterModelMap();
         this.onAfterCreate();
     }
 
     @SuppressWarnings("all")
-    private void getDbConfig() {
+    private void configDatabase() {
         ApplicationInfo appInfo = null;
         try {
             appInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException ignore) {
         }
 
-        final Bundle metaData = appInfo.metaData;
+        Bundle metaData = appInfo.metaData;
+        if (metaData == null)
+            metaData = new Bundle();
         int dbVersion = metaData.getInt(DB_VERSION, DEFAULT_DB_VERSION);
         if (dbVersion == DEFAULT_DB_VERSION)
             log.w("Database VERSION not set");
@@ -72,11 +76,15 @@ public abstract class TCCApplication extends Application {
 
     @SuppressWarnings("all")
     public static <E> TableSpec<E> getTableSpec(Class<E> entityType) {
-        return dbConnection.getTableSpec(entityType);
+        if (dbConnection != null)
+            return dbConnection.getTableSpec(entityType);
+        return null;
     }
 
     public static DBConnectionHelper getDbConnection() {
-        return dbConnection;
+        if (dbConnection != null)
+            return dbConnection;
+        return null;
     }
 
     public void setLogEnabled(boolean show) {
@@ -120,17 +128,19 @@ public abstract class TCCApplication extends Application {
     }
 
     public <T extends DatabaseDAO> T getDao(Class<T> clazz) {
-        return dbConnection.getDao(clazz);
+        if (dbConnection != null)
+            return dbConnection.getDao(clazz);
+        return null;
     }
 
     @Nullable
-    public <C extends BasePresenter<?>, CI extends C> CI getControl(Class<CI> control) {
+    public <C extends BasePresenter<?, ?>, CI extends C> CI getControl(Class<CI> control) {
         return this.factory.getPresenter(control);
     }
 
     @Nullable
     @SuppressWarnings("unchecked")
-    public <V extends BaseView<C>, C extends BasePresenter<V>> Class<V> getViewImpl(Class<V> viewInterface) {
+    public <V extends BaseView<C>, C extends BasePresenter<V, ?>> Class<V> getViewImpl(Class<V> viewInterface) {
         return (Class<V>) this.factory.getViewImpl(viewInterface);
     }
 
@@ -149,6 +159,8 @@ public abstract class TCCApplication extends Application {
      * Mapeamento da implementação do controle com sua implementação da visão
      */
     public abstract Map<Class<? extends BaseView>, Class<? extends BasePresenter>> getControlViewMap();
+
+    public abstract Map<Class<? extends BasePresenter>, Class<? extends BaseModel>> getPresenterModelMap();
 
     /**
      * Mapeamento da interface do DAO com sua implementação, que estende de DBHelper

@@ -7,11 +7,13 @@ import android.support.v4.app.Fragment;
 
 import br.com.frametcc.TCCApplication;
 import br.com.frametcc.database.dao.DatabaseDAO;
+import br.com.frametcc.shared.api.BaseModel;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
 
-public abstract class AbstractBasePresenter<VIEW extends BaseView<?>> implements BasePresenter<VIEW> {
+public abstract class AbstractBasePresenter<VIEW extends BaseView<?>, MODEL extends BaseModel<?>> implements BasePresenter<VIEW, MODEL> {
 
+    protected MODEL model;
     protected VIEW view;
 
     @Override
@@ -22,15 +24,24 @@ public abstract class AbstractBasePresenter<VIEW extends BaseView<?>> implements
     public void destroy() {
     }
 
+    @Override
+    public void setModel(MODEL model) {
+        this.model = model;
+    }
+
     public void setView(VIEW view) {
         this.view = view;
     }
 
     @Override
-    public <C extends BasePresenter<?>, CI extends C> CI getPresenter(Class<CI> presenter) {
+    public <C extends BasePresenter<?, ?>, CI extends C> CI getPresenter(Class<CI> presenter) {
         return getApplication().getControl(presenter);
     }
 
+    /**
+     * @deprecated Utilizar método do Model.
+     */
+    @Deprecated
     public <T extends DatabaseDAO> T getDao(Class<T> dao) {
         return getApplication().getDao(dao);
     }

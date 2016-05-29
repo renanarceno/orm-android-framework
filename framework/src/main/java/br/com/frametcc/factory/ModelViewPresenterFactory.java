@@ -7,15 +7,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import br.com.frametcc.shared.AbstractBasePresenter;
+import br.com.frametcc.shared.api.BaseModel;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
 
-public class ViewPresenterFactory {
+public class ModelViewPresenterFactory {
 
     public Map<Class<? extends BaseView>, Class<? extends BasePresenter>> viewPresenterImpl;
+    public Map<Class<? extends BasePresenter>, Class<? extends BaseModel>> modelPresenterImpl;
     private HashMap<Class<? extends BasePresenter>, BasePresenter> presenterInstances;
 
-    public ViewPresenterFactory() {
+    public ModelViewPresenterFactory() {
         this.presenterInstances = new HashMap<>();
     }
 
@@ -27,6 +29,7 @@ public class ViewPresenterFactory {
             viewImpl.setPresenter(basePresenter);
             basePresenter.setView(viewImpl);
             basePresenter.init();
+            createModelInstance(basePresenter);
             this.presenterInstances.put(controlImpl, basePresenter);
         } catch (NullPointerException npe) {
             throw new RuntimeException(viewImpl.getClass().getSimpleName() + " não possui um presenter mapeado.", npe);
@@ -35,9 +38,23 @@ public class ViewPresenterFactory {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void createModelInstance(BasePresenter presenterImpl) {
+        Class<? extends BaseModel> modelClass = getModelFromPresenterClass(presenterImpl);
+        try {
+            BaseModel baseModel = modelClass.newInstance();
+            baseModel.setPresenter(presenterImpl);
+            presenterImpl.setModel(baseModel);
+            baseModel.init();
+        } catch (NullPointerException npe) {
+            throw new RuntimeException(presenterImpl.getClass().getSimpleName() + " não possui um model mapeado.", npe);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Class<? extends BasePresenter> getPresenterClass(BaseView viewImpl) {
         Class<? extends BaseView> viewImplClass = viewImpl.getClass();
-
         for (Map.Entry<Class<? extends BaseView>, Class<? extends BasePresenter>> entry : this.viewPresenterImpl.entrySet()) {
             Class<? extends BaseView> key = entry.getKey();
             Class<? extends BasePresenter> value = entry.getValue();
@@ -45,6 +62,28 @@ public class ViewPresenterFactory {
                 return value;
         }
         throw new RuntimeException("Can't find presenter \"" + viewImpl.getClass().getSimpleName() + "\"");
+    }
+
+    private Class<? extends BaseModel> getModelFromPresenterClass(BasePresenter presenter) {
+        Class<? extends BasePresenter> presenterClass = presenter.getClass();
+        for (Map.Entry<Class<? extends BasePresenter>, Class<? extends BaseModel>> entry : this.modelPresenterImpl.entrySet()) {
+            Class<? extends BasePresenter> key = entry.getKey();
+            Class<? extends BaseModel> value = entry.getValue();
+            if (key.equals(presenterClass) || key.isAssignableFrom(presenterClass))
+                return value;
+        }
+        return null;
+    }
+
+    private Class<? extends BasePresenter> getPresenterFromModelClass(BaseModel model) {
+        Class<? extends BaseModel> presenterClass = model.getClass();
+        for (Map.Entry<Class<? extends BasePresenter>, Class<? extends BaseModel>> entry : this.modelPresenterImpl.entrySet()) {
+            Class<? extends BasePresenter> key = entry.getKey();
+            Class<? extends BaseModel> value = entry.getValue();
+            if (value.equals(presenterClass) || value.isAssignableFrom(presenterClass))
+                return key;
+        }
+        return null;
     }
 
     @SuppressWarnings("all")
@@ -67,13 +106,13 @@ public class ViewPresenterFactory {
 
     @Nullable
     @SuppressWarnings("all")
-    public <C extends BasePresenter<?>, CI extends C> CI getPresenter(Class<CI> interfaceClass) {
+    public <C extends BasePresenter<?, ?>, CI extends C> CI getPresenter(Class<CI> interfaceClass) {
         Class<?> aClass = getPresenterClassFrom(interfaceClass);
         return (CI) this.presenterInstances.get(aClass);
     }
 
     @SuppressWarnings("unchecked")
-    public <V extends BaseView<C>, C extends BasePresenter<V>> Class<V> getViewImpl(Class<? extends BaseView> interfaceClass) {
+    public <V extends BaseView<C>, C extends BasePresenter<V, ?>> Class<V> getViewImpl(Class<? extends BaseView> interfaceClass) {
         return (Class<V>) getViewClassFrom(interfaceClass);
     }
 

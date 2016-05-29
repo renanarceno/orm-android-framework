@@ -7,11 +7,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import br.com.frametcc.shared.api.BaseModel;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
 import br.com.frametcc.view.utils.ActivityNavigator;
 
-public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<? extends BaseView<?>>> extends AppCompatActivity implements BaseView<PRESENTER> {
+public abstract class AbstractBaseActivityView<PRESENTER extends BasePresenter<? extends BaseView<?>, ? extends BaseModel>> extends AppCompatActivity implements BaseView<PRESENTER> {
 
     protected PRESENTER presenter;
 

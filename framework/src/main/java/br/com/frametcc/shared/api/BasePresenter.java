@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import br.com.frametcc.TCCApplication;
 
-public interface BasePresenter<VIEW extends BaseView<?>> {
+public interface BasePresenter<VIEW extends BaseView<?>, MODEL extends BaseModel<?>> {
 
     String PRESENTER_IMPL = "tccframework.presenterImpl";
     String PRESENTER_INTERFACE = "tccframework.presenterInterface";
@@ -14,9 +14,11 @@ public interface BasePresenter<VIEW extends BaseView<?>> {
 
     void destroy();
 
+    void setModel(MODEL model);
+
     void setView(VIEW view);
 
-    <C extends BasePresenter<?>, CI extends C> CI getPresenter(Class<CI> control);
+    <C extends BasePresenter<?, ?>, CI extends C> CI getPresenter(Class<CI> control);
 
     TCCApplication getApplication();
 

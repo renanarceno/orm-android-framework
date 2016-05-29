@@ -11,11 +11,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import br.com.frametcc.TCCApplication;
+import br.com.frametcc.shared.api.BaseModel;
 import br.com.frametcc.shared.api.BasePresenter;
 import br.com.frametcc.shared.api.BaseView;
 import br.com.frametcc.view.utils.ActivityNavigator;
 
-public abstract class AbstractBaseFragmentView<PRESENTER extends BasePresenter<? extends BaseView<?>>> extends Fragment implements BaseView<PRESENTER> {
+public abstract class AbstractBaseFragmentView<PRESENTER extends BasePresenter<? extends BaseView<?>, ? extends BaseModel>> extends Fragment implements BaseView<PRESENTER> {
 
     public PRESENTER presenter;
     public ViewPassController pass;
