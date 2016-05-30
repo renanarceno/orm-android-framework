@@ -9,6 +9,7 @@ import java.util.Map;
 
 import br.com.frametcc.TCCApplication;
 import br.com.frametcc.database.DAOHelper;
+import br.com.frametcc.database.DBConnectionHelper;
 import br.com.frametcc.database.dao.DatabaseDAO;
 import br.com.frametcc.shared.api.BaseModel;
 import br.com.frametcc.shared.api.BasePresenter;
@@ -17,8 +18,10 @@ import br.com.frametcc.shared.api.BaseView;
 public class TestApplication extends TCCApplication {
 
     @Override
-    public void create() {
-
+    public void onAfterCreate() {
+        DBConnectionHelper connection = getDbConnection();
+        if (connection != null)
+            connection.initDatabase();
     }
 
     @Override

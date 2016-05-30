@@ -8,8 +8,6 @@ public interface BaseModel<PRESENTER extends BasePresenter<?, ?>> {
 
     void setPresenter(PRESENTER presenter);
 
-    PRESENTER getPresenter();
-
     <T extends DatabaseDAO> T getDAO(Class<T> dao);
 
 }

@@ -147,7 +147,8 @@ public abstract class TCCApplication extends Application {
     /**
      * Chamado ao criar a aplicação
      */
-    public abstract void create();
+    public void create() {
+    }
 
     /**
      * Chamado assim que a aplicação inicializa as Factories

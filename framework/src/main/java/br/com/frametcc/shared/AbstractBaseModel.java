@@ -15,13 +15,9 @@ public abstract class AbstractBaseModel<PRESENTER extends BasePresenter<?, ?>> i
 
     }
 
+    @Override
     public void setPresenter(PRESENTER presenter) {
         this.presenter = presenter;
-    }
-
-    @Override
-    public final PRESENTER getPresenter() {
-        return null;
     }
 
     @Override

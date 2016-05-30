@@ -13,7 +13,6 @@ public class LoginView extends AbstractBaseActivityView<LoginPresenter> {
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, Bundle savedInstanceState) {
-        View v = layoutInflater.inflate(R.layout.activity_login, null);
-        return v;
+        return layoutInflater.inflate(R.layout.activity_login, null);
     }
 }
