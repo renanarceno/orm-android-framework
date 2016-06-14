@@ -4,6 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/framework/framework.iml" filepath="$PROJECT_DIR$/framework/framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/greendao/greendao.iml" filepath="$PROJECT_DIR$/greendao/greendao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ormlite/ormlite.iml" filepath="$PROJECT_DIR$/ormlite/ormlite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sugarorm/sugarorm.iml" filepath="$PROJECT_DIR$/sugarorm/sugarorm.iml" />
       <module fileurl="file://$PROJECT_DIR$/tcc.iml" filepath="$PROJECT_DIR$/tcc.iml" />
     </modules>
   </component>

@@ -15,7 +15,7 @@
             android:value="1" />
         <meta-data
             android:name="tccframework.dbName"
-            android:value="wasfiscal2.db" />
+            android:value="teste.db" />
 
         <meta-data
             android:name="tccframework.dbAssets.dbCreateFolder"

@@ -1,5 +1,7 @@
 package com.example.app;
 
+import com.example.app.dao.AccountDAO;
+import com.example.app.dao.AccountDAOImpl;
 import com.example.app.model.LoginModel;
 import com.example.app.presenter.LoginPresenter;
 import com.example.app.view.LoginView;
@@ -17,33 +19,37 @@ import br.com.frametcc.shared.api.BaseView;
 
 public class TestApplication extends TCCApplication {
 
-    @Override
-    public void onAfterCreate() {
-        DBConnectionHelper connection = getDbConnection();
-        if (connection != null)
-            connection.initDatabase();
-    }
+	@Override
+	public void onAfterCreate() {
+		DBConnectionHelper connection = getDbConnection();
+		if (connection != null)
+			connection.initDatabase();
+	}
 
-    @Override
-    public Map<Class<? extends BaseView>, Class<? extends BasePresenter>> getControlViewMap() {
-        Map<Class<? extends BaseView>, Class<? extends BasePresenter>> map = new HashMap<>();
+	@Override
+	public Map<Class<? extends BaseView>, Class<? extends BasePresenter>> getControlViewMap() {
+		Map<Class<? extends BaseView>, Class<? extends BasePresenter>> map = new HashMap<>();
 
-        map.put(LoginView.class, LoginPresenter.class);
+		map.put(LoginView.class, LoginPresenter.class);
 
-        return map;
-    }
+		return map;
+	}
 
-    @Override
-    public Map<Class<? extends BasePresenter>, Class<? extends BaseModel>> getPresenterModelMap() {
-        Map<Class<? extends BasePresenter>, Class<? extends BaseModel>> map = new HashMap<>();
+	@Override
+	public Map<Class<? extends BasePresenter>, Class<? extends BaseModel>> getPresenterModelMap() {
+		Map<Class<? extends BasePresenter>, Class<? extends BaseModel>> map = new HashMap<>();
 
-        map.put(LoginPresenter.class, LoginModel.class);
+		map.put(LoginPresenter.class, LoginModel.class);
 
-        return map;
-    }
+		return map;
+	}
 
-    @Override
-    public Map<Class<? extends DatabaseDAO>, DAOHelper> getDaosIntImpl() {
-        return null;
-    }
+	@Override
+	public Map<Class<? extends DatabaseDAO>, DAOHelper> getDaosIntImpl() {
+		Map<Class<? extends DatabaseDAO>, DAOHelper> map = new HashMap<>();
+
+		map.put(AccountDAO.class, new AccountDAOImpl());
+
+		return map;
+	}
 }

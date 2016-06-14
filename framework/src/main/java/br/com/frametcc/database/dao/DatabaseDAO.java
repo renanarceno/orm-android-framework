@@ -4,27 +4,29 @@ import java.util.List;
 
 public interface DatabaseDAO<E> {
 
-    void insertOrUpdate(E obj);
+	void insertOrUpdate(E obj);
 
-    void insert(E obj);
+	void insert(E obj);
 
-    void updateWhere(E obj, String column);
+	void updateWhere(E obj, String column);
 
-    void delete(E obj);
+	void update(E obj);
 
-    Long getMaxLongValue(String column);
+	void delete(E obj);
 
-    boolean exists(String column, Object value);
+	Long getMaxLongValue(String column);
 
-    List<E> listAll();
+	boolean exists(String column, Object value);
 
-    int countAll();
+	List<E> listAll();
 
-    E getWhere(String whereQuery, Object... value);
+	int countAll();
 
-    List<E> getWhereList(String whereQuery, Object... value);
+	E getWhere(String whereQuery, Object... value);
 
-    List<E> getWhereList(String whereQuery, String limit, Object... value);
+	List<E> getWhereList(String whereQuery, Object... value);
 
-    List<E> getWhereList(String whereQuery, String orderBy, String limit, Object... value);
+	List<E> getWhereList(String whereQuery, String limit, Object... value);
+
+	List<E> getWhereList(String whereQuery, String orderBy, String limit, Object... value);
 }

@@ -10,9 +10,13 @@ import br.com.frametcc.shared.AbstractBasePresenter;
 
 public class LoginPresenter extends AbstractBasePresenter<LoginView, LoginModel> {
 
-    @Override
-    public void onCreateActivity(Bundle savedInstanceState) {
-        super.onCreateActivity(savedInstanceState);
-        this.model.teste();
-    }
+	@Override
+	public void onCreateActivity(Bundle savedInstanceState) {
+		super.onCreateActivity(savedInstanceState);
+	}
+
+	@Override
+	public void onResumeActivity() {
+		this.model.teste();
+	}
 }

@@ -11,8 +11,8 @@ import br.com.frametcc.shared.AbstractBaseActivityView;
 
 public class LoginView extends AbstractBaseActivityView<LoginPresenter> {
 
-    @Override
-    public View onCreateView(LayoutInflater layoutInflater, Bundle savedInstanceState) {
-        return layoutInflater.inflate(R.layout.activity_login, null);
-    }
+	@Override
+	public View onCreateView(LayoutInflater layoutInflater, Bundle savedInstanceState) {
+		return layoutInflater.inflate(R.layout.activity_login, null);
+	}
 }

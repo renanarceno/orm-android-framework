@@ -1,6 +1,1 @@
-CREATE TABLE Teste (
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
-  TESTE_TEXT TEXT,
-  TESTE_DOUBLE DOUBLE,
-  TESTE_BLOB BLOB
-);
+create table account(id integer primary key autoincrement, name text, password text);

@@ -45,7 +45,7 @@ public class QueryHelper<E> {
 
     public void insert(SQLiteDatabase db, E obj) {
         final ContentValues values = table.getInsertContentValues(obj);
-        final long insert = db.insert(table.getTableName(), null, values);
+        final Long insert = db.insert(table.getTableName(), null, values);
         table.setAutoIncrementPrimaryKey(obj, insert);
     }
 
