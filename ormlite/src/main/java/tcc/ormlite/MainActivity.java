@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.j256.ormlite.android.AndroidConnectionSource;
 import com.j256.ormlite.dao.BaseDaoImpl;
@@ -16,10 +17,19 @@ import java.sql.SQLException;
 
 public class MainActivity extends AppCompatActivity {
 
+	private TextView remove;
+	private TextView insert;
+	private TextView update;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		insert = (TextView) findViewById(R.id.insert);
+		update = (TextView) findViewById(R.id.update);
+		remove = (TextView) findViewById(R.id.remove);
+
 		new Loader().execute();
 	}
 
@@ -60,6 +70,13 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 			double total = (System.currentTimeMillis() - start) / 1000.0;
+			final double finalTotal = total;
+			MainActivity.this.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					insert.setText("Tempo decorrido INSERT: " + finalTotal + "s");
+				}
+			});
 			String tag = "ORM_LITE";
 			Log.v(tag, "INSERT 10.000 entidades");
 			Log.v(tag, "Tempo decorrido INSERT: " + total + "s");
@@ -80,6 +97,13 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 			total = (System.currentTimeMillis() - start) / 1000.0;
+			final double finalTotal1 = total;
+			MainActivity.this.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					update.setText("Tempo decorrido UPDATE: " + finalTotal1 + "s");
+				}
+			});
 			Log.v(tag, "Tempo decorrido UPDATE: " + total + "s");
 			Log.v(tag, "Tempo médio por entidade: " + (total / 10000.0) + "s");
 
@@ -95,6 +119,13 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 			total = (System.currentTimeMillis() - start) / 1000.0;
+			final double finalTotal2 = total;
+			MainActivity.this.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					remove.setText("Tempo decorrido DELETE: " + finalTotal2 + "s");
+				}
+			});
 			Log.v(tag, "Tempo decorrido DELETE: " + total + "s");
 			Log.v(tag, "Tempo médio por entidade: " + (total / 10000.0) + "s");
 

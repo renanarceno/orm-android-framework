@@ -19,4 +19,36 @@ public class LoginPresenter extends AbstractBasePresenter<LoginView, LoginModel>
 	public void onResumeActivity() {
 		this.model.teste();
 	}
+
+	public void setInsertMsg(final String msg) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				view.setInsertMsg(msg);
+			}
+		});
+	}
+
+	public void setUpdateMsg(final String msg) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				view.setUpdateMsg(msg);
+			}
+		});
+	}
+
+	public void setRemoveMsg(final String msg) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				view.setRemoveMsg(msg);
+			}
+		});
+	}
+
+	public void runOnUiThread(Runnable run) {
+		this.view.runOnUiThread(run);
+	}
+
 }
