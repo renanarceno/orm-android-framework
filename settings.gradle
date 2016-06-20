@@ -1,1 +1,1 @@
-include ':framework', ':app', ':greendao', ':ormlite', ':sugarorm'
+include ':framework', ':app', ':greendao', ':ormlite', ':sugarorm', ':activeandroid'
