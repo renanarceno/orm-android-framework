@@ -14,9 +14,9 @@
             android:value="banco.db"/>
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="5"/>
+            android:value="1"/>
 
-        <activity android:name="tcc.ormlite.MainActivity">
+        <activity android:name=".MainActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

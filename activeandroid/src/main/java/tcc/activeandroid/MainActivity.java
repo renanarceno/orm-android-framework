@@ -1,18 +1,12 @@
-package tcc.ormlite;
+package tcc.activeandroid;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
-
-import java.sql.SQLException;
-
-import tcc.activeandroid.Account;
-import tcc.activeandroid.R;
-import tcc.activeandroid.RandomString;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		protected Object doInBackground(Object... params) {
 
-			deleteDatabase("banco.db");
+			//deleteDatabase("banco.db");
 
 			new SQLiteOpenHelper(MainActivity.this, "banco.db", null, 1) {
 				@Override
