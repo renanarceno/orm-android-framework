@@ -90,13 +90,13 @@ public abstract class DAOHelper<E> implements DatabaseDAO<E>, DBListener<E> {
     }
 
     @Override
-    public E getWhere(String whereQuery, Object... value) {
-        return this.queryHelper.getWhere(getReadableDatabase(), whereQuery, value);
+    public E getWhere(String columns, Object... value) {
+        return this.queryHelper.getWhere(getReadableDatabase(), columns, value);
     }
 
     @Override
-    public List<E> getWhereList(String whereQuery, Object... value) {
-        return this.queryHelper.getWhereList(getReadableDatabase(), whereQuery, null, null, null, null, value);
+    public List<E> getWhereList(String columns, Object... value) {
+        return this.queryHelper.getWhereList(getReadableDatabase(), columns, null, null, null, null, value);
     }
 
     @Override

@@ -3,12 +3,6 @@ package br.com.frametcc.database.api.adapter;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import br.com.frametcc.database.api.DatabaseId;
-
 public class LongTypeAdapter implements ContentValueAdapter<Long> {
 
     @Override

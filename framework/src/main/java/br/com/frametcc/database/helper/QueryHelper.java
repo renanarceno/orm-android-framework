@@ -51,7 +51,7 @@ public class QueryHelper<E> {
 
     public void update(SQLiteDatabase db, E obj) {
         final ContentValues values = table.getInsertContentValues(obj);
-        db.update(table.getTableName(), values, table.getPrimaryKeyWhereQuery(), table.getPrimaryKeyWhereValues(obj));
+        db.update(table.getTableName(), values, table.getPrimaryKeyWhereQuery(), table.getPrimaryKeyValues(obj));
     }
 
     public List<E> listAll(SQLiteDatabase db) {
@@ -81,7 +81,7 @@ public class QueryHelper<E> {
     }
 
     public void delete(SQLiteDatabase db, E obj) {
-        db.delete(table.getTableName(), table.getPrimaryKeyWhereQuery(), table.getPrimaryKeyWhereValues(obj));
+        db.delete(table.getTableName(), table.getPrimaryKeyWhereQuery(), table.getPrimaryKeyValues(obj));
     }
 
     public Long getMaxValue(SQLiteDatabase db, String column) {

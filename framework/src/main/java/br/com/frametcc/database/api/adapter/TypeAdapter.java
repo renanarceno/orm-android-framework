@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import br.com.frametcc.database.api.DatabaseId;
-
 public final class TypeAdapter {
 
     private static TypeAdapter singleton;
