@@ -29,8 +29,8 @@ public abstract class AbstractBaseFragmentView<PRESENTER extends BasePresenter<?
     }
 
     @Override
-    public void setPresenter(PRESENTER controller) {
-        this.presenter = controller;
+    public void setPresenter(PRESENTER presenter) {
+        this.presenter = presenter;
     }
 
     @Override
